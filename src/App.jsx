@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import RestarauntAuth from './components/RestarauntAuth';
-import Dashboard from './components/Dashboard{Page';
+import Dashboard from './components/DashboardPage';
 import Login from './components/Login';
 import Signup from './components/Signup';
 
