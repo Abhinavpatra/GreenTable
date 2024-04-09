@@ -20,7 +20,8 @@ function Signup() {
       const restaurantId = generateRestaurantId();
       
       // Send restaurant details along with the generated restaurant ID to the server for signup
-      await axios.post('/api/signup', { name, email, password, restaurantId });
+      
+      await axios.post('http://localhost:3000/signup', {name, email, password, restaurantId});
 
       // Redirect to the login page after successful signup
       navigate('/login');
