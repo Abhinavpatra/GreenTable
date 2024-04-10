@@ -47,11 +47,14 @@ app.post('/signup' , async (req,res) => {
         const salt = await bcrypt.genSalt(5);
         const hashedPassword = await bcrypt.hash(password.trim(),salt);
 
-        const newUser = new User({name,email,password : hashedPassword,restaurantId});
+        const newEmail = email.toLowerCase()
+
+        const newUser = new User({name,email : newEmail,password : hashedPassword,restaurantId});
 
         // // Example: Save user data to a database
         // // Replace this with your actual implementation
         // saveUserData(name, email, password, restaurantId);
+        console.log(newUser)
         const registeredUser =  await newUser.save();
         console.log(registeredUser);
         res.status(200).json({ message: 'Signup successful' });
@@ -60,4 +63,40 @@ app.post('/signup' , async (req,res) => {
         console.error('Error handling signup request:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+})
+
+// Login 
+const jwt = require('jsonwebtoken');
+const cookieParse = require('cookie-parser');
+app.use(cookieParse());
+
+app.post('/api/login', async (req,res) => {
+
+    try {
+        const { email,password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+        const newPassword = password.trim()
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(409).json({error: 'User Not Exist , SignUp First!!'});
+        }
+        bcrypt.compare(newPassword, user.password, (err, result) => {
+            if (err) {
+                console.error('Error handling bcrypt compare:',err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+            if (result) {
+                const token = jwt.sign({id : user._id},process.env.JWT_SECRET_KEY, {expiresIn : '12h'})
+                console.log(token)
+                return res.status(200).json({ token, loggedInRestaurantId: user.restaurantId });
+            } else {
+                return res.status(403).json({ error: 'Incorrect Password' });
+            }
+        });
+    } catch(err){
+        console.error('Error handling login request:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }    
 })

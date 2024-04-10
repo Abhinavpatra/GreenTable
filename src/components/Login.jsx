@@ -15,14 +15,14 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/login', { email, password });
+      const response = await axios.post('http://localhost:3000/api/login', { email, password });
 
       // Assuming the server sends back the restaurant ID after login
       const loggedInRestaurantId = response.data.loggedInRestaurantId;
-
       // Set the restaurant ID in Recoil state
       setRestaurantId(loggedInRestaurantId);
 
+      console.log(response.data)
       localStorage.setItem('token', response.data.token);
       navigate('/dashboard');
     } catch (err) {
